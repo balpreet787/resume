@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.DS_Store
+.env
+.env.*
+!.env.example
+.aws/
+*.pem
+*.key
+coverage/
+test-results/
+playwright-report/
+tmp/
+.venv/
+infra/parameters.local.json

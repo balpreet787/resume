@@ -1,0 +1,9 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      nodejs: 22
+  build:
+    commands:
+      - test -n "$CODEBUILD_SRC_DIR_WebsiteArtifact"
+      - SITE_DIR="$CODEBUILD_SRC_DIR_WebsiteArtifact" npm run test:artifact
