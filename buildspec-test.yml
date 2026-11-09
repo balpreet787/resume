@@ -5,5 +5,5 @@ phases:
       nodejs: 22
   build:
     commands:
-      - test -n "$CODEBUILD_SRC_DIR_WebsiteArtifact"
-      - SITE_DIR="$CODEBUILD_SRC_DIR_WebsiteArtifact" npm run test:artifact
+      - test -n "$CODEBUILD_SRC_DIR_BuildArtifact"
+      - SITE_DIR="$CODEBUILD_SRC_DIR_BuildArtifact" npm run test:artifact

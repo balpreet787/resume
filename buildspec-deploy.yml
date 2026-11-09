@@ -7,19 +7,19 @@ phases:
     commands:
       - test -n "$WEBSITE_BUCKET"
       - test -n "$DISTRIBUTION_ID"
-      - test -n "$CODEBUILD_SRC_DIR_WebsiteArtifact"
-      - SITE_DIR="$CODEBUILD_SRC_DIR_WebsiteArtifact" npm run test:artifact
+      - test -n "$CODEBUILD_SRC_DIR_BuildArtifact"
+      - SITE_DIR="$CODEBUILD_SRC_DIR_BuildArtifact" npm run test:artifact
   build:
     commands:
       # Upload immutable assets first. Retain old hashes so cached HTML still works.
-      - aws s3 cp "$CODEBUILD_SRC_DIR_WebsiteArtifact/assets/" "s3://$WEBSITE_BUCKET/assets/" --recursive --cache-control "public,max-age=31536000,immutable" --only-show-errors
-      - aws s3 cp "$CODEBUILD_SRC_DIR_WebsiteArtifact/favicon.svg" "s3://$WEBSITE_BUCKET/favicon.svg" --content-type "image/svg+xml" --cache-control "public,max-age=300" --only-show-errors
-      - aws s3 cp "$CODEBUILD_SRC_DIR_WebsiteArtifact/build-info.json" "s3://$WEBSITE_BUCKET/build-info.json" --content-type "application/json" --cache-control "no-cache" --only-show-errors
+      - aws s3 cp "$CODEBUILD_SRC_DIR_BuildArtifact/assets/" "s3://$WEBSITE_BUCKET/assets/" --recursive --cache-control "public,max-age=31536000,immutable" --only-show-errors
+      - aws s3 cp "$CODEBUILD_SRC_DIR_BuildArtifact/favicon.svg" "s3://$WEBSITE_BUCKET/favicon.svg" --content-type "image/svg+xml" --cache-control "public,max-age=300" --only-show-errors
+      - aws s3 cp "$CODEBUILD_SRC_DIR_BuildArtifact/build-info.json" "s3://$WEBSITE_BUCKET/build-info.json" --content-type "application/json" --cache-control "no-cache" --only-show-errors
       # Switch the entry point only after every required asset has uploaded.
-      - aws s3 cp "$CODEBUILD_SRC_DIR_WebsiteArtifact/index.html" "s3://$WEBSITE_BUCKET/index.html" --content-type "text/html; charset=utf-8" --cache-control "no-cache" --only-show-errors
+      - aws s3 cp "$CODEBUILD_SRC_DIR_BuildArtifact/index.html" "s3://$WEBSITE_BUCKET/index.html" --content-type "text/html; charset=utf-8" --cache-control "no-cache" --only-show-errors
       - INVALIDATION_ID=$(aws cloudfront create-invalidation --distribution-id "$DISTRIBUTION_ID" --paths '/' '/index.html' '/build-info.json' '/favicon.svg' --query 'Invalidation.Id' --output text)
       - aws cloudfront wait invalidation-completed --distribution-id "$DISTRIBUTION_ID" --id "$INVALIDATION_ID"
   post_build:
     commands:
       - test "$CODEBUILD_BUILD_SUCCEEDING" = 1
-      - SITE_DIR="$CODEBUILD_SRC_DIR_WebsiteArtifact" node scripts/smoke.mjs "https://$DISTRIBUTION_DOMAIN"
+      - SITE_DIR="$CODEBUILD_SRC_DIR_BuildArtifact" node scripts/smoke.mjs "https://$DISTRIBUTION_DOMAIN"

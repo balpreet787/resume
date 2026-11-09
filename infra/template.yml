@@ -409,7 +409,7 @@ Resources:
               InputArtifacts:
                 - Name: SourceArtifact
               OutputArtifacts:
-                - Name: WebsiteArtifact
+                - Name: BuildArtifact
               RunOrder: 1
         - Name: Test
           Actions:
@@ -424,7 +424,7 @@ Resources:
                 PrimarySource: SourceArtifact
               InputArtifacts:
                 - Name: SourceArtifact
-                - Name: WebsiteArtifact
+                - Name: BuildArtifact
               RunOrder: 1
         - Name: Deploy
           Actions:
@@ -439,7 +439,7 @@ Resources:
                 PrimarySource: SourceArtifact
               InputArtifacts:
                 - Name: SourceArtifact
-                - Name: WebsiteArtifact
+                - Name: BuildArtifact
               RunOrder: 1
 
   DeployFailureAlarm:
